@@ -80,32 +80,6 @@ function statemachine.active(state)
 	return statemachine.stateactive[state];
 end
 
-function statemachine.guicallback(state, callback, ...)
-	if not statemachine.stateactive[state] then
-		return;
-	end
-
-	for _, object in ipairs(statemachine.states[state].gui) do
-		object[callback](object, ...);
-	end
-end
-
-function statemachine.drawgui(state)
-	statemachine.guicallback(state, "_draw");
-end
-
-function statemachine.updategui(state, dt)
-	statemachine.guicallback(state, "_update", dt);
-end
-
-function statemachine.mousemovedgui(state, ...)
-	statemachine.guicallback(state, "mousemoved", ...);
-end
-
-function statemachine.mousepressedgui(state, ...)
-	statemachine.guicallback(state, "mousepressed", ...);
-end
-
 function statemachine.update(dt)
 	statemachine.runall("update", dt);
 end
@@ -120,8 +94,7 @@ end
 
 function statemachine.mousepressed(...)
 	local laststate = statemachine.currentstates[#statemachine.currentstates];
-	-- statemachine.run(laststate, "mousepressed", ...);
-	statemachine.runall("mousepressed", ...);
+	statemachine.run(laststate, "mousepressed", ...);
 end
 
 return statemachine;
