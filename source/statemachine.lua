@@ -1,9 +1,11 @@
 local statemachine = {};
 
 statemachine.constants = {
+	STATE_MAIN = 0
 }
 
 statemachine.states = {
+	[statemachine.constants.STATE_MAIN] = require("source.state.main")
 }
 
 -- Currently active states.
