@@ -4,6 +4,7 @@
 local Color = require("source.color");
 local resources = require("source.resources");
 local statemachine = require("source.statemachine");
+local Slab = require("Slab");
 
 local VERSION = "2.0";
 local TITLE = "Level Merger v" .. VERSION;
@@ -14,18 +15,23 @@ function love.load(args)
 
 	love.audio.setVolume(1/4);
 
+	Slab.Initialize(args);
+	Slab.PushFont(resources.font);
+
+	local style = Slab.GetStyle();
+	style.TextColor = {1.0, 1.0, 1.0, 1.0};
+
 	statemachine.set(statemachine.constants.STATE_MAIN);
 end
 
 function love.update(dt)
+	Slab.Update(dt);
 	statemachine.update(dt);
 end
 
 function love.draw()
+	Slab.Draw();
 	statemachine.draw();
-
-	Color.White:apply();
-	love.graphics.printf(TITLE, resources.font, 0, 10, 400, "center", 0, 2, 2)
 end
 
 function love.mousemoved(x, y, dx, dy, istouch)
