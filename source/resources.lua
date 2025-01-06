@@ -1,4 +1,4 @@
-local FONT = love.graphics.newFont("resource/font.otf", 16);
+local FONT = love.graphics.newFont("resource/font.otf", 24);
 FONT:setFilter("nearest", "nearest");
 
 local SOUND = love.audio.newSource("resource/sfx.ogg", "static");
