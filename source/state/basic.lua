@@ -27,6 +27,10 @@ return function()
 		-- Callback when the mouse is pressed.
 	end
 
+	function obj:filedropped(file)
+		-- Callback when a file is dropped.
+	end
+
 	function obj:exit()
 		-- Callback when the state has been exited.
 		-- Expected to reset stuff here.

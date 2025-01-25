@@ -56,6 +56,11 @@ function StateLevelPicker:update(dt)
 	Slab.EndWindow();
 end
 
+function StateLevelPicker:filedropped(file)
+	local _, _, filename = string.find(file:getFilename(), "^.+[/\\](.+)$");
+	levelholder.read(filename, file:read());
+end
+
 function StateLevelPicker:getstateremovals(statemachine)
 	if not self.data.options.window.IsOpen then
 		return self.state;

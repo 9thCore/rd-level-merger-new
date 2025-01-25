@@ -44,3 +44,7 @@ end
 function love.mousepressed(...)
 	statemachine.mousepressed(...);
 end
+
+function love.filedropped(...)
+	statemachine.filedropped(...)
+end

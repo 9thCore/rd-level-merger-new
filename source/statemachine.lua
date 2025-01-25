@@ -165,4 +165,9 @@ function statemachine.mousepressed(...)
 	statemachine.run(laststate, "mousepressed", ...);
 end
 
+function statemachine.filedropped(...)
+	local laststate = statemachine.currentstates[#statemachine.currentstates];
+	statemachine.run(laststate, "filedropped", ...);
+end
+
 return statemachine;
