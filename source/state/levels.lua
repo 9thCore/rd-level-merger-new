@@ -25,7 +25,6 @@ function StateLevels:enter()
 			AllowMove = false,
 			NoOutline = true,
 			Border = 10,
-			AutoSizeContent = false,
 			NoSavedSettings = true,
 			ShowMinimize = false,
 			ConstrainPosition = true,
@@ -38,7 +37,10 @@ function StateLevels:enter()
 		};
 
 		self.data.options.levelname = {
-			Align = "center"
+			Align = "center",
+			Color = {0, 0, 0, 0},
+			HoverColor = {0, 0, 0, 0},
+			PressColor = {0, 0, 0, 0}
 		};
 
 		self.data.options.confirmation = {
@@ -66,7 +68,9 @@ function StateLevels:update(dt)
 		local level = levelholder.levels[i];
 
 		Slab.SetLayoutColumn(1);
-		Slab.Text(level.name, self.data.options.levelname);
+
+		-- Workaround: Text won't align properly with buttons
+		Slab.Button(level.name, self.data.options.levelname);
 
 		Slab.SetLayoutColumn(2);
 		if Slab.Button("Options") then
@@ -103,6 +107,9 @@ function StateLevels:update(dt)
 		self.data.confirmation.type = constants.CONFIRMATION_REMOVE_ALL;
 	end
 
+	Slab.EndLayout();
+	Slab.EndWindow();
+
 	if self.data.confirmation.type == constants.CONFIRMATION_REMOVE_ONE then
 		local choice = Slab.MessageBox("Remove", "Remove this level?", self.data.options.confirmation);
 
@@ -124,9 +131,6 @@ function StateLevels:update(dt)
 			self.data.confirmation.type = constants.CONFIRMATION_NONE;
 		end
 	end
-
-	Slab.EndLayout();
-	Slab.EndWindow();
 end
 
 function StateLevels:getstateadditions(statemachine)
