@@ -21,6 +21,10 @@ statemachine.states = {
 statemachine.currentstates = {};
 statemachine.stateactive = {};
 
+-- State-specific externally-manipulable data.
+-- Does not need the state to be active.
+statemachine.data = {};
+
 -- Lock any changes to the
 --  states while functions
 --  are being run.
@@ -51,7 +55,7 @@ end
 function statemachine.init(state)
 	statemachine.stateactive[state] = true;
 	statemachine.states[state].state = state;
-	statemachine.run(state, "enter");
+	statemachine.run(state, "enter", statemachine.getdata(state));
 end
 
 function statemachine.set(state)
@@ -150,6 +154,14 @@ function statemachine.update(dt)
 	for _, state in ipairs(removedstates) do
 		statemachine.remove(state);
 	end
+end
+
+function statemachine.getdata(state)
+	if not statemachine.data[state] then
+		statemachine.data[state] = {};
+	end
+
+	return statemachine.data[state];
 end
 
 function statemachine.draw()

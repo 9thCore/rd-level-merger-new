@@ -4,9 +4,12 @@ return function()
 		state = nil
 	};
 
-	function obj:enter()
+	function obj:enter(data)
 		-- Callback when the state has just been entered.
 		-- Expected to be initialised here.
+		-- data can be altered by external code,
+		--  and represents a method of communication
+		--  between different states.
 	end
 
 	function obj:update(dt)
