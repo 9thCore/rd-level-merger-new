@@ -17,9 +17,9 @@ function StateLevels:enter()
 		self.data.options.window = {
 			Title = "Levels",
 			X = 0,
-			Y = 0,
+			Y = 48,
 			W = love.graphics.getWidth(),
-			H = love.graphics.getHeight(),
+			H = love.graphics.getHeight() - 48,
 			AutoSizeWindow = false,
 			AllowResize = false,
 			AllowMove = false,
