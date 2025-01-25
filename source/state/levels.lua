@@ -79,11 +79,13 @@ function StateLevels:update(dt)
 
 		Slab.SetLayoutColumn(3);
 		if Slab.Button("Remove") then
-			-- if shift then
-			--     remove immediately
-			-- else
-			self.data.confirmation.type = constants.CONFIRMATION_REMOVE_ONE;
-			self.data.confirmation.index = i;
+			if Slab.IsKeyDown("lshift") or Slab.IsKeyDown("rshift") then
+				levelholder.remove(i);
+			else
+				self.data.confirmation.type = constants.CONFIRMATION_REMOVE_ONE;
+				self.data.confirmation.index = i;
+				i = i + 1;
+			end
 		else
 			i = i + 1;
 		end
@@ -101,10 +103,11 @@ function StateLevels:update(dt)
 
 	Slab.SetLayoutColumn(3);
 	if Slab.Button("Remove all") then
-		-- if shift then
-		--     remove immediately
-		-- else
-		self.data.confirmation.type = constants.CONFIRMATION_REMOVE_ALL;
+		if Slab.IsKeyDown("lshift") or Slab.IsKeyDown("rshift") then
+			levelholder.removeall();
+		else
+			self.data.confirmation.type = constants.CONFIRMATION_REMOVE_ALL;
+		end
 	end
 
 	Slab.EndLayout();
