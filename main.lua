@@ -17,6 +17,7 @@ function love.load(args)
 
 	Slab.Initialize(args);
 	Slab.PushFont(resources.font);
+	Slab.DisableDocks{"Left", "Right", "Bottom"};
 
 	local style = Slab.GetStyle();
 	style.TextColor = {1.0, 1.0, 1.0, 1.0};
