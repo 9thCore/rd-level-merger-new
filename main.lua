@@ -4,6 +4,7 @@
 local Color = require("source.color");
 local resources = require("source.resources");
 local statemachine = require("source.statemachine");
+local levelholder = require("source.worker.levelholder");
 local Slab = require("Slab");
 
 local VERSION = "2.0";
@@ -23,6 +24,7 @@ function love.load(args)
 	style.TextColor = {1.0, 1.0, 1.0, 1.0};
 
 	statemachine.set(statemachine.constants.STATE_MAIN);
+	levelholder.ensure();
 end
 
 function love.update(dt)

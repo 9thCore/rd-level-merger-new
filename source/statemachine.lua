@@ -1,11 +1,15 @@
 local statemachine = {};
 
 statemachine.constants = {
-	STATE_MAIN = 0
+	STATE_MAIN = 0,
+	STATE_LEVELS = 1,
+	STATE_LEVEL_PICKER = 2
 }
 
 statemachine.states = {
-	[statemachine.constants.STATE_MAIN] = require("source.state.main")
+	[statemachine.constants.STATE_MAIN] = require("source.state.main"),
+	[statemachine.constants.STATE_LEVELS] = require("source.state.levels"),
+	[statemachine.constants.STATE_LEVEL_PICKER] = require("source.state.levelpicker")
 }
 
 -- Currently active states.

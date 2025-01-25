@@ -1,4 +1,5 @@
 local state = require("source.state.basic");
+local levelholder = require("source.worker.levelholder");
 local Slab = require("Slab");
 
 local StateMenu = state();
@@ -52,6 +53,12 @@ function StateMenu:update(dt)
 
 	if Slab.Button("Choose levels") then
 		self.data.openlevels = true;
+	end
+
+	Slab.NewLine(4);
+
+	if Slab.Button("Merge") then
+		levelholder.merge();
 	end
 
 	Slab.EndLayout();
