@@ -17,19 +17,31 @@ statemachine.states = {
 statemachine.currentstates = {};
 statemachine.stateactive = {};
 
+-- Lock any changes to the
+--  states while functions
+--  are being run.
+-- Will throw.
+local runningall = false;
+
 function statemachine.run(state, funcname, ...)
 	local object = statemachine.states[state];
 	if object == nil or object[funcname] == nil then
 		return;
 	end
 
-	return object[funcname](object, statemachine, ...);
+	return object[funcname](object, ...);
+end
+
+function statemachine.runallwithcallback(callback, funcname, ...)
+	runningall = true;
+	for _, state in ipairs(statemachine.currentstates) do
+		callback(statemachine.run(state, funcname, ...));
+	end
+	runningall = false;
 end
 
 function statemachine.runall(funcname, ...)
-	for _, state in ipairs(statemachine.currentstates) do
-		statemachine.run(state, funcname, ...);
-	end
+	statemachine.runallwithcallback(function() end, funcname, ...);
 end
 
 function statemachine.init(state)
@@ -39,6 +51,10 @@ function statemachine.init(state)
 end
 
 function statemachine.set(state)
+	if runningall then
+		error("Cannot set state during runall of a function");
+	end
+
 	statemachine.runall("exit");
 	
 	statemachine.currentstates = {state};
@@ -48,6 +64,10 @@ function statemachine.set(state)
 end
 
 function statemachine.add(state, position)
+	if runningall then
+		error("Cannot add a state during runall of a function");
+	end
+
 	if statemachine.active(state) then
 		return;
 	end
@@ -62,6 +82,10 @@ function statemachine.add(state, position)
 end
 
 function statemachine.remove(state)
+	if runningall then
+		error("Cannot remove a state during runall of a function");
+	end
+
 	if not statemachine.active(state) then
 		return;
 	end
@@ -82,6 +106,46 @@ end
 
 function statemachine.update(dt)
 	statemachine.runall("update", dt);
+
+	local newstates = {};
+	statemachine.runallwithcallback(function(result)
+		if result == nil then
+			return;
+		end
+
+		if type(result) == "number" then
+			table.insert(newstates, result);
+			return;
+		end
+
+		for _, state in ipairs(result) do
+			table.insert(newstates, result);
+		end
+	end, "getstateadditions", statemachine);
+
+	for _, state in ipairs(newstates) do
+		statemachine.add(state);
+	end
+
+	local removedstates = {};
+	statemachine.runallwithcallback(function(result)
+		if result == nil then
+			return;
+		end
+
+		if type(result) == "number" then
+			table.insert(removedstates, result);
+			return;
+		end
+
+		for _, state in ipairs(result) do
+			table.insert(removedstates, result);
+		end
+	end, "getstateremovals", statemachine);
+
+	for _, state in ipairs(removedstates) do
+		statemachine.remove(state);
+	end
 end
 
 function statemachine.draw()
