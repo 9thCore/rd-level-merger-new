@@ -40,6 +40,7 @@ function StateMenu:enter()
 
 	self.data.opendefaults = false;
 	self.data.openlevels = false;
+	self.data.errorstring = nil;
 end
 
 function StateMenu:update(dt)
@@ -65,7 +66,10 @@ function StateMenu:update(dt)
 	Slab.NewLine(4);
 
 	if Slab.Button("Merge") then
-		levelholder.merge();
+		local passed, err = levelholder.merge();
+		if not passed then
+			self.data.errorstring = err;
+		end
 	end
 
 	Slab.EndLayout();
@@ -83,6 +87,13 @@ function StateMenu:getstateadditions(statemachine)
 		data.list = levelholder.defaultoptions;
 
 		return statemachine.constants.STATE_OPTIONS;
+	elseif self.data.errorstring then
+
+		local data = statemachine.getdata(statemachine.constants.STATE_ERROR);
+		data.error = self.data.errorstring;
+		self.data.errorstring = nil;
+
+		return statemachine.constants.STATE_ERROR;
 	end
 
 	return nil;
