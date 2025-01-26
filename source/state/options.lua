@@ -1,4 +1,5 @@
 local state = require("source.state.basic");
+local util = require("source.util");
 local Slab = require("Slab");
 
 local StateOptions = state();
@@ -67,6 +68,32 @@ function StateOptions:update(dt)
 		option:update(dt);
 
 		Slab.BeginLayout("options.removelayout", self.data.options.removelayout);
+
+		if i > 1 then
+			if Slab.Button("^") then
+				local prev = self.data.external[i - 1];
+
+				self.data.external[i] = prev;
+				self.data.external[i - 1] = option;
+
+				option = prev;
+			end
+		else
+			util.slabtext("");
+		end
+
+		if i < #self.data.external then
+			if Slab.Button("v") then
+				local next = self.data.external[i + 1];
+
+				self.data.external[i] = next;
+				self.data.external[i + 1] = option;
+
+				option = next;
+			end
+		else
+			util.slabtext("");
+		end
 
 		if Slab.Button("Remove") then
 			if Slab.IsKeyDown("lshift") or Slab.IsKeyDown("rshift") then
