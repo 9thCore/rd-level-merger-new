@@ -3,6 +3,14 @@ local Slab = require("Slab");
 
 local alloptions = {
 	{
+		name = "Strip Metadata",
+		Tooltip = "Remove metadata\nfrom a level.",
+		class = require("source.worker.options.strip_metadata"),
+		init = function(object)
+			object:init();
+		end
+	},
+	{
 		name = "Bar Filter",
 		Tooltip = "Keeps or filters out events\nin a given bar range.",
 		class = require("source.worker.options.bar_filter"),
