@@ -42,13 +42,9 @@ end
 function bar_filter:apply(leveldata)
 	local newdata = {};
 
-	newdata.bookmarks = util.deepcopy(leveldata.bookmarks);
-	newdata.conditionals = util.deepcopy(leveldata.conditionals);
-	newdata.settings = util.deepcopy(leveldata.settings);
-	newdata.decorations = util.deepcopy(leveldata.decorations);
-	newdata.rows = util.deepcopy(leveldata.rows);
-
+	newdata = util.deepcopy(leveldata);
 	newdata.events = {};
+
 	for _, event in ipairs(leveldata.events) do
 		if self.data.options.combobox.Selected == "Keep" and event.bar >= self.range:getstart() and event.bar <= self.range:getend() then
 			table.insert(newdata.events, event);
