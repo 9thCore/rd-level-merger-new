@@ -103,8 +103,6 @@ function levelholder.merge()
 		util.merge(finaldata, data);
 	end
 
-	finaldata.settings = levelholder.levels[1].settings;
-
 	levelholder.write(finaldata);
 end
 
