@@ -22,7 +22,7 @@ function love.load(args)
 
 	local style = Slab.GetStyle();
 	style.TextColor = {1.0, 1.0, 1.0, 1.0};
-
+-- test
 	statemachine.set(statemachine.constants.STATE_MAIN);
 	levelholder.ensure();
 end
