@@ -103,7 +103,14 @@ function levelholder.merge()
 		util.merge(finaldata, data);
 	end
 
+	local passed, err = levelholder.verify(finaldata);
+	if not passed then
+		return false, err;
+	end
+
 	levelholder.write(finaldata);
+
+	return true, nil;
 end
 
 function levelholder.remove(position)
@@ -122,6 +129,21 @@ function levelholder.opendirectory()
 	local savedir = love.filesystem.getSaveDirectory();
 	local url = string.format("file://%s/%s", savedir, levelholder.workingdirectory);
 	love.system.openURL(url);
+end
+
+function levelholder.verify(leveldata)
+	-- Must have some sort of metadata
+	local good = false;
+	for _, _ in pairs(leveldata.settings) do
+		good = true;
+		break;
+	end
+
+	if not good then
+		return false, "Must have at least one level with metadata!";
+	end
+
+	return true, nil;
 end
 
 return levelholder;
