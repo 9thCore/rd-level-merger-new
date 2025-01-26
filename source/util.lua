@@ -24,7 +24,16 @@ function util.merge(a, b)
 	if type(a) ~= "table" and type(b) ~= "table" then
 		return;
 	elseif type(a) ~= "table" or type(b) ~= "table" then
-		error("cannot merge table and non-table values");
+		-- Trying to merge a table and non-table value,
+		--  assume the non-table value must be appended
+		--  to the table value and it would be correct
+		if type(a) == "table" then
+			table.insert(a, b);
+		else
+			table.insert(b, a);
+		end
+		
+		return;
 	end
 
 	if b[1] ~= nil then
