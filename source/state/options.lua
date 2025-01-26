@@ -1,9 +1,7 @@
 local state = require("source.state.basic");
-local levelholder = require("source.worker.levelholder");
 local Slab = require("Slab");
-local util = require("source.util");
 
-local StateLevels = state();
+local StateOptions = state();
 
 local constants = {
 	CONFIRMATION_NONE = 0,
@@ -11,12 +9,12 @@ local constants = {
 	CONFIRMATION_REMOVE_ALL = 2
 }
 
-function StateLevels:enter()
+function StateOptions:enter(data)
 	if not self.data.initialised then
 		self.data.options = {};
 
 		self.data.options.window = {
-			Title = "Levels",
+			Title = "Options",
 			X = 0,
 			Y = 48,
 			W = love.graphics.getWidth(),
@@ -32,51 +30,47 @@ function StateLevels:enter()
 			AllowFocus = false
 		};
 
+		self.data.options.confirmation = {
+			Buttons = {"Yes", "No"}
+		};
+
 		self.data.options.layout = {
 			Columns = 3,
 			AlignX = "center"
 		};
 
-		self.data.options.confirmation = {
-			Buttons = {"Yes", "No"}
+		self.data.options.removelayout = {
+			AlignX = "right"
 		};
 
 		self.data.initialised = true;
 	end
 
 	self.data.options.window.IsOpen = true;
-	self.data.openpicker = false;
-	self.data.opendefaults = false;
-	self.data.defaultindex = 0;
+	self.data.external = data.list;
 
+	self.data.openpicker = false;
 	self.data.confirmation = {
 		type = constants.CONFIRMATION_NONE,
 		index = 0
 	};
 end
 
-function StateLevels:update(dt)
-	Slab.BeginWindow("level.window", self.data.options.window);
-	Slab.BeginLayout("level.layout", self.data.options.layout);
+function StateOptions:update(dt)
+	Slab.BeginWindow("options.window", self.data.options.window);
 
 	local i = 1;
-	while i <= #levelholder.levels do
-		local level = levelholder.levels[i];
+	while i <= #self.data.external do
+		local option = self.data.external[i];
 
-		Slab.SetLayoutColumn(1);
+		Slab.Separator();
+		option:update(dt);
 
-		util.slabtext(level.name);
+		Slab.BeginLayout("options.removelayout", self.data.options.removelayout);
 
-		Slab.SetLayoutColumn(2);
-		if Slab.Button("Options") then
-			self.data.opendefaults = true;
-			self.data.defaultindex = i;
-		end
-
-		Slab.SetLayoutColumn(3);
 		if Slab.Button("Remove") then
 			if Slab.IsKeyDown("lshift") or Slab.IsKeyDown("rshift") then
-				levelholder.remove(i);
+				table.remove(self.data.external, i);
 			else
 				self.data.confirmation.type = constants.CONFIRMATION_REMOVE_ONE;
 				self.data.confirmation.index = i;
@@ -85,22 +79,27 @@ function StateLevels:update(dt)
 		else
 			i = i + 1;
 		end
+
+		Slab.EndLayout();
+		Slab.Separator();
 	end
+
+	Slab.BeginLayout("options.layout", self.data.options.layout);
 
 	Slab.SetLayoutColumn(1);
 	if Slab.Button("+") then
 		self.data.openpicker = true;
 	end
 
-	-- Fill column with garbage, invisible data
-	--  because otherwise it isn't there ??
 	Slab.SetLayoutColumn(2);
 	Slab.Text("");
 
 	Slab.SetLayoutColumn(3);
 	if Slab.Button("Remove all") then
 		if Slab.IsKeyDown("lshift") or Slab.IsKeyDown("rshift") then
-			levelholder.removeall();
+			for k, _ in ipairs(self.data.external) do
+				self.data.external[k] = nil
+			end
 		else
 			self.data.confirmation.type = constants.CONFIRMATION_REMOVE_ALL;
 		end
@@ -110,20 +109,22 @@ function StateLevels:update(dt)
 	Slab.EndWindow();
 
 	if self.data.confirmation.type == constants.CONFIRMATION_REMOVE_ONE then
-		local choice = Slab.MessageBox("Remove", "Remove this level?", self.data.options.confirmation);
+		local choice = Slab.MessageBox("Remove", "Remove this option?", self.data.options.confirmation);
 
 		if choice == "Yes" then
-			levelholder.remove(self.data.confirmation.index);
+			table.remove(self.data.external, self.data.confirmation.index);
 		end
 
 		if choice ~= "" then
 			self.data.confirmation.type = constants.CONFIRMATION_NONE;
 		end
 	elseif self.data.confirmation.type == constants.CONFIRMATION_REMOVE_ALL then
-		local choice = Slab.MessageBox("Remove", "Remove all levels?", self.data.options.confirmation);
+		local choice = Slab.MessageBox("Remove", "Remove all options?", self.data.options.confirmation);
 
 		if choice == "Yes" then
-			levelholder.removeall();
+			for k, _ in ipairs(self.data.external) do
+				self.data.external[k] = nil
+			end
 		end
 
 		if choice ~= "" then
@@ -132,23 +133,20 @@ function StateLevels:update(dt)
 	end
 end
 
-function StateLevels:getstateadditions(statemachine)
+function StateOptions:getstateadditions(statemachine)
 	if self.data.openpicker then
 		self.data.openpicker = false;
-		return statemachine.constants.STATE_LEVEL_PICKER;
-	elseif self.data.opendefaults then
-		self.data.opendefaults = false;
 
-		local data = statemachine.getdata(statemachine.constants.STATE_OPTIONS);
-		data.list = levelholder.levels[self.data.defaultindex].options;
+		local data = statemachine.getdata(statemachine.constants.STATE_OPTION_PICKER);
+		data.list = self.data.external;
 
-		return statemachine.constants.STATE_OPTIONS;
+		return statemachine.constants.STATE_OPTION_PICKER;
 	end
 
 	return nil;
 end
 
-function StateLevels:getstateremovals(statemachine)
+function StateOptions:getstateremovals(statemachine)
 	if not self.data.options.window.IsOpen then
 		return self.state;
 	end
@@ -156,4 +154,4 @@ function StateLevels:getstateremovals(statemachine)
 	return nil;
 end
 
-return StateLevels;
+return StateOptions;

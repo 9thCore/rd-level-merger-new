@@ -1,9 +1,11 @@
 local json = require("lib.json");
 local levelclass = require("source.worker.level");
+local util = require("source.util");
 
 local levelholder = {
 	-- Parsed levels go here
 	levels = {},
+	defaultoptions = {},
 	workingdirectory = "Input",
 	outputlevel = "out.rdlevel",
 	nullreplica = "\"LEVELMERGER_NULL\""
@@ -42,6 +44,12 @@ function levelholder.read(filename, text)
 	end
 
 	local object = levelclass:new(level, filename);
+	object.options = {};
+
+	for k, v in ipairs(levelholder.defaultoptions) do
+		object.options[k] = v:copy();
+	end
+	
 	table.insert(levelholder.levels, object);
 end
 
@@ -88,7 +96,16 @@ function levelholder.write(data)
 end
 
 function levelholder.merge()
-	levelholder.write(levelholder.levels[1].data);
+	local finaldata = {};
+
+	for _, level in ipairs(levelholder.levels) do
+		local data = level:apply();
+		util.merge(finaldata, data);
+	end
+
+	finaldata.settings = levelholder.levels[1].settings;
+
+	levelholder.write(finaldata);
 end
 
 function levelholder.remove(position)

@@ -38,6 +38,7 @@ function StateMenu:enter()
 		self.data.initialised = true;
 	end
 
+	self.data.opendefaults = false;
 	self.data.openlevels = false;
 end
 
@@ -47,9 +48,15 @@ function StateMenu:update(dt)
 	Slab.Textf(self.data.title, self.data.options.title);
 	Slab.Separator();
 
-	Slab.NewLine(8);
+	Slab.NewLine(4);
 
 	Slab.BeginLayout("menu.layout", self.data.options.layout);
+
+	if Slab.Button("Default options") then
+		self.data.opendefaults = true;
+	end
+
+	Slab.NewLine(4);
 
 	if Slab.Button("Choose levels") then
 		self.data.openlevels = true;
@@ -69,6 +76,13 @@ function StateMenu:getstateadditions(statemachine)
 	if self.data.openlevels then
 		self.data.openlevels = false;
 		return statemachine.constants.STATE_LEVELS;
+	elseif self.data.opendefaults then
+		self.data.opendefaults = false;
+
+		local data = statemachine.getdata(statemachine.constants.STATE_OPTIONS);
+		data.list = levelholder.defaultoptions;
+
+		return statemachine.constants.STATE_OPTIONS;
 	end
 
 	return nil;
