@@ -4,7 +4,7 @@ local Slab = require("Slab");
 local alloptions = {
 	{
 		name = "Bar Filter",
-		desc = "Keeps or filters out events in a given bar range.",
+		Tooltip = "Keeps or filters out events\nin a given bar range.",
 		class = require("source.worker.options.bar_filter"),
 		init = function(object)
 			object:init();
@@ -28,8 +28,7 @@ function StateOptionPicker:enter(data)
 		};
 
 		self.data.options.layout = {
-			AlignX = "center",
-			Columns = 2
+			AlignX = "center"
 		};
 
 		self.data.initialised = true;
@@ -43,17 +42,17 @@ function StateOptionPicker:update(dt)
 	Slab.BeginWindow("optionpicker.window", self.data.options.window);
 	Slab.BeginLayout("optionpicker.layout", self.data.options.layout);
 
-	for _, option in ipairs(alloptions) do
-		Slab.SetLayoutColumn(1);
-		
-		if Slab.Button(option.name) then
+	Slab.Text("Hover over option for more information");
+	Slab.Separator();
+
+	for i, option in ipairs(alloptions) do		
+		if Slab.Button(option.name, option) then
 			local obj = option.class:new();
 			obj:init();
 			table.insert(self.data.external, obj);
 		end
 
-		Slab.SetLayoutColumn(2);
-		Slab.Text(option.desc);
+		Slab.Separator();
 	end
 
 	Slab.EndLayout();
